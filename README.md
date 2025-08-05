@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +8,12 @@
 </head>
 <body>
   <div class="game-container">
-    <h1>Kiếm Tiền Điểm Danh TikTok</h1> <!-- Tiêu đề trò chơi -->
+    <h1>Kiếm Tiền Điểm Danh TikTok</h1> <!-- Changed title here -->
     <p id="balance">Số dư: 0 VND</p>
     <button id="clickButton">Bấm để cộng 5,000 vào số dư</button>
     <br><br>
 
-    <!-- Phần rút tiền -->
+    <!-- Withdraw Section -->
     <h2>Rút tiền</h2>
     <input type="text" id="bankName" placeholder="Tên ngân hàng" />
     <input type="text" id="accountNumber" placeholder="Số tài khoản" />
@@ -27,34 +27,21 @@
   <script src="script.js"></script>
 </body>
 </html>
-Các bước tiếp theo:
-Lưu file HTML:
-
-Lưu mã trên vào một file có tên index.html trong thư mục của dự án của bạn.
-
-Tạo file CSS và JavaScript:
-
-Bạn cần tạo thêm 2 file nữa để trang trí (CSS) và xử lý logic (JavaScript).
-
-File CSS (style.css):
-
-css
-Sao chép
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #ff2a68, #00c6ff); /* Màu nền theo cảm hứng TikTok */
+  background: linear-gradient(135deg, #ff2a68, #00c6ff); /* TikTok inspired gradient background */
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   margin: 0;
-  color: white; /* Màu chữ trắng để nổi bật */
+  color: white; /* Set text color to white for contrast */
 }
 
 .game-container {
   text-align: center;
   padding: 30px;
-  background-color: rgba(0, 0, 0, 0.6); /* Nền đen trong suốt */
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   max-width: 400px;
@@ -63,13 +50,13 @@ body {
 
 h1 {
   font-size: 2.5rem;
-  color: #ff5d57; /* Màu đỏ TikTok */
+  color: #ff5d57; /* TikTok's accent red color */
   text-transform: uppercase;
   margin-bottom: 20px;
 }
 
 button {
-  background-color: #ff5d57; /* Màu đỏ TikTok */
+  background-color: #ff5d57; /* TikTok-inspired red */
   color: white;
   padding: 12px 25px;
   border: none;
@@ -81,7 +68,7 @@ button {
 }
 
 button:hover {
-  background-color: #ff2a68; /* Màu đỏ đậm khi hover */
+  background-color: #ff2a68; /* Darker shade on hover */
 }
 
 input[type="text"],
@@ -100,7 +87,7 @@ input[type="number"] {
 h2 {
   font-size: 1.8rem;
   margin-top: 30px;
-  color: #00c6ff; /* Màu xanh TikTok */
+  color: #00c6ff; /* TikTok-inspired blue */
 }
 
 p {
@@ -112,10 +99,6 @@ p {
   font-size: 1.1rem;
   margin-top: 20px;
 }
-File JavaScript (script.js):
-
-javascript
-Sao chép
 // Declare a variable to store the balance
 let balance = 0;
 
