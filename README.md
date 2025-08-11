@@ -1,195 +1,328 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kiếm Tiền Điểm Danh TikTok</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Ngân Hàng Thời Gian</title>
+  <style>
+    /* Các kiểu chung */
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      margin: 0;
+      padding: 0;
+      background-color: #F5F5F5;
+      color: #333;
+    }
+
+    header {
+      background-color: #B8A59D;
+      color: white;
+      padding: 20px;
+      text-align: center; /* Căn giữa nội dung trong header */
+      border-bottom: 2px solid #D1C6B1;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5em; /* Đặt kích thước chữ lớn hơn cho tiêu đề */
+    }
+
+    main {
+      padding: 30px;
+    }
+
+    /* Mục hỗ trợ khách hàng */
+    .customer-support {
+      background-color: #f0f8ff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .customer-support h3 {
+      font-size: 1.5em;
+      color: #4CAF50;
+    }
+
+    .customer-support a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+
+    .customer-support a:hover {
+      text-decoration: underline;
+    }
+
+    /* Mục rút tiền */
+    .withdraw-info {
+      background-color: #FFFFFF;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, select {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #A6D6E1; /* Màu xanh nhẹ cho nút rút tiền */
+      color: #333;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    button:hover {
+      background-color: #80B5C0;
+    }
+
+    #withdraw-message {
+      font-size: 1.1em;
+      margin-top: 15px;
+      color: #5D9B9B; /* Màu xanh lá đậm cho thông báo */
+    }
+
+    /* Hiệu ứng lấp lánh cho nền của phần tử */
+    .shimmer-background {
+      position: relative;
+      overflow: hidden;
+      background-color: #4CAF50; /* Màu nền cho phần tử */
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 8px;
+    }
+
+    /* Tạo hiệu ứng ánh sáng lấp lánh cho nền */
+    .shimmer-background::before {
+      content: '';
+      position: absolute;
+      top: -150%;
+      left: -150%;
+      width: 300%;
+      height: 300%;
+      background: linear-gradient(45deg, rgba(255,255,255,0.4), rgba(255,204,0,0.4), rgba(255,255,255,0.4));
+      animation: shimmerBackground 3s infinite;
+      opacity: 0.8;
+      z-index: 1; /* Đảm bảo nền ánh sáng nằm dưới văn bản */
+    }
+
+    /* Hiệu ứng chuyển động lấp lánh */
+    @keyframes shimmerBackground {
+      0% {
+        transform: translateX(-100%) translateY(-100%);
+      }
+      50% {
+        transform: translateX(100%) translateY(100%);
+      }
+      100% {
+        transform: translateX(-100%) translateY(-100%);
+      }
+    }
+
+    /* Văn bản không bị ảnh hưởng */
+    .shimmer-background h1, .shimmer-background p {
+      position: relative;
+      z-index: 2; /* Đảm bảo văn bản nổi lên trên nền lấp lánh */
+    }
+
+    /* Hiệu ứng cuộn trang */
+    .hidden {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.6s ease-out;
+    }
+
+    .visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
-  <div class="game-container">
-    <h1>Kiếm Tiền Điểm Danh TikTok</h1> <!-- Changed title here -->
-    <p id="balance">Số dư: 0 VND</p>
-    <button id="clickButton">Bấm để cộng 5,000 vào số dư</button>
-    <br><br>
+  <header>
+    <h1>Chào Đến Với Ngân Hàng Quốc Tế</h1>
+  </header>
 
-    <!-- Withdraw Section -->
-    <h2>Rút tiền</h2>
-    <input type="text" id="bankName" placeholder="Tên ngân hàng" />
-    <input type="text" id="accountNumber" placeholder="Số tài khoản" />
-    <input type="text" id="accountHolder" placeholder="Tên người nhận" />
-    <input type="number" id="withdrawAmount" placeholder="Nhập số tiền cần rút" />
-    <button id="withdrawButton">Rút tiền</button>
+  <main>
+    <section class="bank-info">
+      <p><strong>Số dư hiện tại:</strong> <span id="current-balance">200,000</span> VND</p>
+      <p id="message"></p>
+    </section>
 
-    <p id="withdrawalStatus"></p>
-  </div>
+    <section class="day-info">
+      <p><strong>Số ngày đã trôi qua:</strong> <span id="days-count">0</span> ngày</p>
+      <p><strong>Thời gian trôi qua:</strong> <span id="elapsed-time">0h:0m:0s</span></p>
+    </section>
 
-  <script src="script.js"></script>
+    <!-- Mục rút tiền -->
+    <section class="withdraw-info">
+      <h3>Rút Tiền</h3>
+      <form id="withdraw-form">
+        <label for="bank">Chọn ngân hàng:</label>
+        <select id="bank" required>
+          <option value="">Chọn ngân hàng</option>
+          <option value="Vietcombank">Vietcombank</option>
+          <option value="BIDV">BIDV</option>
+          <option value="Techcombank">Techcombank</option>
+          <option value="VietinBank">VietinBank</option>
+          <option value="Sacombank">Sacombank</option>
+          <option value="MB Bank">MB Bank</option>
+        </select><br><br>
+
+        <label for="account-number">Số tài khoản:</label>
+        <input type="text" id="account-number" pattern="[0-9]+" title="Chỉ được nhập số" required><br><br>
+
+        <label for="account-name">Tên chủ tài khoản:</label>
+        <input type="text" id="account-name" pattern="[A-Za-z\s]+" title="Chỉ được nhập chữ" required><br><br>
+
+        <label for="amount">Chọn số tiền rút:</label>
+        <select id="amount" required>
+          <option value="200000">200,000 VND</option>
+          <option value="200000000">200 triệu VND</option>
+          <option value="500000000">500 triệu VND</option>
+          <option value="1000000000">1 tỷ VND</option>
+          <option value="5000000000">5 tỷ VND</option>
+          <option value="10000000000">10 tỷ VND</option>
+        </select><br><br>
+
+        <button type="button" onclick="withdrawMoney()">Rút tiền</button>
+      </form>
+      <p id="withdraw-message"></p>
+    </section>
+
+    <!-- Mục Hỗ trợ Rút Tiền -->
+    <section class="customer-support">
+      <h3>Hỗ trợ Rút Tiền</h3>
+      <p>Liên hệ với chúng tôi qua <a href="https://www.facebook.com/profile.php?id=61557014079442" target="_blank">Facebook</a> để được hỗ trợ nhanh chóng.</p>
+    </section>
+
+    <!-- Mục thông báo khách hàng ngẫu nhiên -->
+    <section class="notifications">
+      <h3>Thông báo mới</h3>
+      <ul id="notification-list">
+        <!-- Các thông báo ngẫu nhiên sẽ xuất hiện ở đây -->
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    let balance = 200000; // Số dư ban đầu
+    let days = 0; // Số ngày đã trôi qua
+    let startTime; // Thời gian bắt đầu
+    let interval; // Biến chứa interval để dừng quá trình khi cần
+    let elapsedInterval; // Biến chứa interval tính thời gian trôi qua
+    let withdrawalCount = 0; // Đếm số lần rút tiền
+
+    // Mảng tên khách hàng ngẫu nhiên
+    const customerNames = ["Nguyễn Văn A", "Trần Thị B", "Phạm Minh C", "Lê Quang D", "Hoàng Mai E", "Vũ Thị F"];
+
+    // Mảng các số tiền ngẫu nhiên
+    const amounts = [200000000, 500000000, 1000000000, 5000000000, 10000000000];
+
+    // Hàm để tạo thông báo ngẫu nhiên mỗi phút
+    function generateRandomNotification() {
+      const customerName = customerNames[Math.floor(Math.random() * customerNames.length)];
+      const amount = amounts[Math.floor(Math.random() * amounts.length)];
+      const notification = `${customerName} đã rút ${amount.toLocaleString()} VND thành công!`;
+      return notification;
+    }
+
+    // Hiển thị thông báo mỗi phút
+    setInterval(function() {
+      const notificationList = document.getElementById('notification-list');
+      const newNotification = document.createElement('li');
+      newNotification.textContent = generateRandomNotification();
+      notificationList.prepend(newNotification); // Thêm thông báo mới vào đầu danh sách
+
+      // Giới hạn chỉ hiển thị tối đa 5 thông báo
+      if (notificationList.children.length > 5) {
+        notificationList.removeChild(notificationList.lastChild); // Xóa thông báo cũ nhất
+      }
+    }, 60000); // 60,000 ms = 1 phút
+
+    // Hàm bắt đầu nhân đôi số dư
+    window.onload = function() {
+      startDoubling();  // Gọi hàm startDoubling ngay khi trang tải
+    };
+
+    function startDoubling() {
+      document.getElementById('message').textContent = ""; // Xóa thông báo trước đó
+
+      startTime = new Date();
+
+      // Cập nhật thời gian trôi qua mỗi giây
+      elapsedInterval = setInterval(function() {
+        const now = new Date();
+        const elapsed = new Date(now - startTime); // Tính thời gian đã trôi qua
+        const hours = elapsed.getUTCHours();
+        const minutes = elapsed.getUTCMinutes();
+        const seconds = elapsed.getUTCSeconds();
+
+        // Hiển thị thời gian trôi qua
+        document.getElementById('elapsed-time').textContent = `${hours}h:${minutes}m:${seconds}s`;
+      }, 1000); // Cập nhật mỗi giây
+
+      interval = setInterval(function() {
+        balance *= 2; // Nhân đôi số dư
+        days++; // Tăng số ngày lên 1
+
+        // Cập nhật giao diện
+        document.getElementById('current-balance').textContent = balance.toLocaleString();
+        document.getElementById('days-count').textContent = days;
+
+        // Nếu số dư vượt quá 100 ngày, dừng lại
+        if (days >= 100) {
+          clearInterval(interval); // Dừng quá trình
+          clearInterval(elapsedInterval); // Dừng quá trình tính thời gian trôi qua
+          document.getElementById('message').textContent = "Quá trình đã hoàn thành sau 100 ngày!";
+        }
+      }, 86400000); // Mỗi 24 giờ (24 giờ * 60 phút * 60 giây * 1000 milliseconds)
+    }
+
+    // Hàm xử lý rút tiền
+    function withdrawMoney() {
+      const bank = document.getElementById('bank').value;
+      const accountNumber = document.getElementById('account-number').value;
+      const accountName = document.getElementById('account-name').value;
+      const amountInput = document.getElementById('amount');
+      const amount = parseFloat(amountInput.value);
+
+      // Kiểm tra số tiền rút có hợp lệ hay không
+      if (amount <= 0 || amount > balance) {
+        document.getElementById('withdraw-message').textContent = `Số tiền rút không hợp lệ!`;
+        document.getElementById('withdraw-message').style.color = "red";
+        return;
+      }
+
+      // Hiển thị thông báo đang xử lý
+      document.getElementById('withdraw-message').textContent = "Đang xử lý rút tiền... Vui lòng chờ trong giây lát.";
+      document.getElementById('withdraw-message').style.color = "#F9A825"; // Màu vàng cho thông báo đang xử lý
+
+      // Sau 1 giờ (3600000 milliseconds), cập nhật thông báo rút tiền thành công
+      setTimeout(function() {
+        balance -= amount; // Trừ số tiền rút từ số dư
+        document.getElementById('current-balance').textContent = balance.toLocaleString(); // Cập nhật lại số dư
+
+        // Hiển thị thông báo rút tiền thành công
+        document.getElementById('withdraw-message').textContent = `Rút tiền thành công! Bạn đã rút ${amount.toLocaleString()} VND từ ngân hàng ${bank}.`;
+        document.getElementById('withdraw-message').style.color = "green"; // Màu xanh cho thông báo thành công
+
+        // Tăng số lần rút tiền
+        withdrawalCount++;
+      }, 3600000); // Thời gian xử lý: 1 giờ (3600000 milliseconds)
+    }
+  </script>
 </body>
 </html>
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #ff2a68, #00c6ff); /* TikTok inspired gradient background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  color: white; /* Set text color to white for contrast */
-}
-
-.game-container {
-  text-align: center;
-  padding: 30px;
-  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
-  border-radius: 15px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 100%;
-}
-
-h1 {
-  font-size: 2.5rem;
-  color: #ff5d57; /* TikTok's accent red color */
-  text-transform: uppercase;
-  margin-bottom: 20px;
-}
-
-button {
-  background-color: #ff5d57; /* TikTok-inspired red */
-  color: white;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 18px;
-  margin-top: 15px;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #ff2a68; /* Darker shade on hover */
-}
-
-input[type="text"],
-input[type="number"] {
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  margin-top: 10px;
-  width: 100%;
-  margin-bottom: 15px;
-  background-color: #1c1c1c;
-  color: white;
-}
-
-h2 {
-  font-size: 1.8rem;
-  margin-top: 30px;
-  color: #00c6ff; /* TikTok-inspired blue */
-}
-
-p {
-  font-size: 1.2rem;
-  margin-top: 10px;
-}
-
-#withdrawalStatus {
-  font-size: 1.1rem;
-  margin-top: 20px;
-}
-// Declare a variable to store the balance
-let balance = 0;
-
-// Get the balance element, buttons, and input fields
-const balanceElement = document.getElementById("balance");
-const clickButton = document.getElementById("clickButton");
-const withdrawButton = document.getElementById("withdrawButton");
-const withdrawAmount = document.getElementById("withdrawAmount");
-const bankName = document.getElementById("bankName");
-const accountNumber = document.getElementById("accountNumber");
-const accountHolder = document.getElementById("accountHolder");
-const withdrawalStatus = document.getElementById("withdrawalStatus");
-
-// Function to format the balance with commas and VND
-function formatCurrency(amount) {
-  return amount.toLocaleString('vi-VN') + ' VND'; // Using 'vi-VN' to format for Vietnamese currency
-}
-
-// Update the displayed balance
-function updateBalance() {
-  balanceElement.textContent = `Số dư: ${formatCurrency(balance)}`;
-}
-
-// Event listener for the "Add Balance" button
-clickButton.addEventListener("click", function() {
-  // Add 5,000 to the balance
-  balance += 5000;
-  // Update the balance display
-  updateBalance();
-});
-
-// Event listener for the "Withdraw" button
-withdrawButton.addEventListener("click", function() {
-  // Show initial processing message
-  withdrawalStatus.textContent = "Đang xử lý, vui lòng chờ 1 đến 2 tiếng...";
-  withdrawalStatus.style.color = "orange";
-  
-  // Get the withdrawal amount, bank name, account number, and account holder's name
-  const amountToWithdraw = parseInt(withdrawAmount.value);
-  const bank = bankName.value.trim();
-  const account = accountNumber.value.trim();
-  const holder = accountHolder.value.trim();
-
-  // Simulate a delay to show the processing message
-  setTimeout(function() {
-    const minWithdrawalAmount = 200000; // Minimum withdrawal amount: 200,000 VND
-    const maxWithdrawalAmount = 10000000000; // Maximum withdrawal amount: 10 billion VND
-
-    // Check if the withdrawal amount is valid and meets the minimum and maximum withdrawal amounts
-    if (isNaN(amountToWithdraw) || amountToWithdraw <= 0) {
-      withdrawalStatus.textContent = "Vui lòng nhập số tiền hợp lệ.";
-      withdrawalStatus.style.color = "red";
-      return;
-    }
-
-    if (amountToWithdraw < minWithdrawalAmount) {
-      withdrawalStatus.textContent = `Số tiền rút tối thiểu là ${formatCurrency(minWithdrawalAmount)}.`;
-      withdrawalStatus.style.color = "red";
-      return;
-    }
-
-    if (amountToWithdraw > maxWithdrawalAmount) {
-      withdrawalStatus.textContent = `Số tiền rút tối đa là ${formatCurrency(maxWithdrawalAmount)}.`;
-      withdrawalStatus.style.color = "red";
-      return;
-    }
-
-    if (!bank || !account || !holder) {
-      withdrawalStatus.textContent = "Vui lòng nhập đầy đủ thông tin ngân hàng, tài khoản và người nhận.";
-      withdrawalStatus.style.color = "red";
-      return;
-    }
-
-    if (amountToWithdraw > balance) {
-      withdrawalStatus.textContent = "Số dư không đủ để rút.";
-      withdrawalStatus.style.color = "red";
-    } else {
-      // Subtract the withdrawal amount from the balance
-      balance -= amountToWithdraw;
-      // Update the balance display
-      updateBalance();
-      
-      // Display a success message
-      withdrawalStatus.textContent = `Rút ${formatCurrency(amountToWithdraw)} thành công từ tài khoản ${account} tại ngân hàng ${bank}, người nhận: ${holder}.`;
-      withdrawalStatus.style.color = "green";
-    }
-
-    // Clear the input fields
-    withdrawAmount.value = "";
-    bankName.value = "";
-    accountNumber.value = "";
-    accountHolder.value = "";
-  }, 2000); // Simulate 2 seconds delay to show the processing message
-});
