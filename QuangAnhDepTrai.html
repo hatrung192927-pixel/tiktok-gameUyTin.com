@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sàn Đầu Tư Việt Nam</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #6E7B8B;
+            margin: 0;
+            padding: 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .invest-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 255, 255, 0.7);
+            padding: 40px;
+            width: 70%;
+            margin: 0 auto;
+            position: relative;
+            color: #000;
+            border: 1px solid #ddd;
+            background: linear-gradient(135deg, #ffffff, #f2f2f2);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .invest-container:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 1);
+        }
+
+        h2 { color: #000; font-size: 2em; margin-bottom: 20px; }
+        .timer, .result { margin-top: 20px; font-weight: 600; }
+        .timer { color: #32CD32; font-size: 1.2em; }
+        .result { color: #32CD32; font-size: 1.5em; }
+
+        .btn-currency {
+            padding: 14px 30px;
+            background-color: #4CAF50; 
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em; 
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 15px rgba(0, 255, 0, 0.7); 
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-currency:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 1);
+        }
+
+        .btn-currency:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .balance {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 100;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Lịch sử người rút tiền */
+        .withdraw-history {
+            position: fixed;
+            top: 50%;
+            left: 20px; /* Chỉnh lại để hiển thị bên trái */
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            color: white;
+            border-radius: 10px;
+            width: 300px;
+            font-size: 1em;
+            z-index: 500;
+            max-height: 70%;
+            overflow-y: auto;
+        }
+
+        .withdraw-history ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .withdraw-history li {
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+
+        .withdraw-history li span {
+            font-weight: bold;
+        }
+
+        /* Rút Tiền ở góc phải màn hình */
+        .withdraw {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 100;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .withdraw:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .withdraw i {
+            margin-right: 6px;
+            color: #ffd700;
+        }
+
+        /* Cờ Việt Nam ở góc dưới trái */
+        .flag {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 80px; /* Căn chỉnh kích thước của lá cờ */
+            height: 50px; /* Căn chỉnh kích thước của lá cờ */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Vietnam.svg/800px-Flag_of_Vietnam.svg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: 400;
+        }
+
+        /* Modal Nạp Tiền */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 200;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            color: #000;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 20px;
+            width: 400px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        input[type="text"], input[type="number"], input[type="file"] {
+            padding: 14px;
+            font-size: 1.2em;
+            margin: 10px 0;
+            width: 80%;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        /* Nút Nạp Tiền */
+        .btn-deposit {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 100;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-deposit:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Nút Chăm Sóc Khách Hàng */
+        .btn-customer-service {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 12px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 100;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-customer-service:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-customer-service img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Số dư -->
+<div class="balance" id="balance">
+    <i class="fas fa-gem"></i>Tổng Số Dư: <span id="balanceAmount">0</span> Nghìn VND
+</div>
+
+<!-- Đặt cược -->
+<div class="invest-container">
+    <h2>Sàn Đầu Tư Việt Nam</h2>
+    <p>Chọn số tiền cược:</p>
+    <div>
+        <button class="btn-currency" id="btn50k" onclick="setInvestment(50000)">50k</button>
+        <button class="btn-currency" id="btn100k" onclick="setInvestment(100000)">100k</button>
+        <button class="btn-currency" id="btn300k" onclick="setInvestment(300000)">300k</button>
+        <button class="btn-currency" id="btn500k" onclick="setInvestment(500000)">500k</button>
+        <button class="btn-currency" id="btn1m" onclick="setInvestment(1000000)">1 triệu</button>
+        <button class="btn-currency" id="btn10m" onclick="setInvestment(10000000)">10 triệu</button>
+        <button class="btn-currency" id="btn20m" onclick="setInvestment(20000000)">20 triệu</button>
+        <button class="btn-currency" id="btn50m" onclick="setInvestment(50000000)">50 triệu</button>
+        <button class="btn-currency" id="btn100m" onclick="setInvestment(100000000)">100 triệu</button>
+        <button class="btn-currency" id="btn500m" onclick="setInvestment(500000000)">500 triệu</button>
+        <button class="btn-currency" id="btn1b" onclick="setInvestment(1000000000)">1 tỷ</button>
+        <button class="btn-currency" id="btn5b" onclick="setInvestment(5000000000)">5 tỷ</button>
+        <button class="btn-currency" id="btnAllIn" onclick="setAllIn()">All In</button> <!-- Nút All In -->
+    </div>
+    <p>Chọn Tăng hoặc Giảm:</p>
+    <button class="btn-currency" id="btnIncrease" onclick="setChoice('increase')" disabled>Tăng</button>
+    <button class="btn-currency" id="btnDecrease" onclick="setChoice('decrease')" disabled>Giảm</button>
+    <button class="btn-currency" id="btnCancel" onclick="cancelBet()" disabled>Hủy</button>
+    <div class="timer" id="timer">Chờ Kết Quả 30 giây</div>
+    <div class="result" id="result"></div>
+</div>
+
+<!-- Lịch sử người rút tiền -->
+<div class="withdraw-history" id="withdrawHistory">
+    <h4>Lịch Sử Người Rút Tiền</h4>
+    <ul id="withdrawList">
+        <!-- Người rút tiền sẽ được thêm vào đây -->
+    </ul>
+</div>
+
+<!-- Rút Tiền -->
+<div class="withdraw" onclick="openWithdrawModal()">
+    <i class="fas fa-wallet"></i>Rút Tiền
+</div>
+
+<!-- Modal Rút Tiền -->
+<div id="withdrawModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeWithdrawModal()">&times;</span>
+        <h3>Thông Tin Rút Tiền</h3>
+        <input type="text" id="bankName" placeholder="Tên Ngân Hàng"><br>
+        <input type="text" id="accountNumber" placeholder="Số Tài Khoản"><br>
+        <input type="text" id="accountName" placeholder="Tên Chủ Tài Khoản"><br>
+        <input type="number" id="withdrawAmount" placeholder="Số Tiền Rút (Nghìn VND)"><br>
+        <button class="btn-currency" onclick="confirmWithdraw()">Xác Nhận Rút</button>
+        <button class="btn-currency" onclick="closeWithdrawModal()">Hủy</button>
+    </div>
+</div>
+
+<!-- Nút Nạp Tiền -->
+<div class="btn-deposit" onclick="openDepositModal()">Nạp Tiền</div>
+
+<!-- Modal Nạp Tiền -->
+<div id="depositModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDepositModal()">&times;</span>
+        <h3>Thông Tin Nạp Tiền</h3>
+        <p><strong>Ngân Hàng MB BANK</strong></p>
+        <p>Số Tài Khoản: <strong>1108111111</strong></p>
+        <p>Tên Chủ Tài Khoản: <strong>DINH DUY QUANG</strong></p>
+        <p>Vui lòng chuyển tiền vào tài khoản trên và tải ảnh chuyển tiền lên dưới đây.</p>
+        <input type="number" id="depositAmount" placeholder="Số Tiền Nạp (Nghìn VND)"><br>
+        <input type="file" id="transferImage" accept="image/*"><br>
+        <button class="btn-currency" onclick="confirmDeposit()">Nạp Tiền</button>
+        <button class="btn-currency" onclick="closeDepositModal()">Hủy</button>
+    </div>
+</div>
+<!-- Cờ Việt Nam ở góc dưới trái -->
+<div class="flag"></div>
+
+<script>
+// Biến lưu trữ số dư và trạng thái của các nút cược
+let balance = 0; // Số dư bắt đầu từ 0
+let countdownTime = 30;  // Thời gian đếm ngược ban đầu
+let timerInterval;
+let selectedAmount = 0;  // Mức cược được chọn
+let canBet = true;  // Kiểm tra người chơi có thể cược hay không
+
+// Cập nhật số dư trên giao diện
+function updateBalance() {
+    document.getElementById('balanceAmount').textContent = balance.toLocaleString();
+}
+
+// Bắt đầu đếm ngược
+function startTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);  // Dừng bộ đếm hiện tại
+    }
+
+    document.getElementById('timer').textContent = `Chờ Kết Quả ${countdownTime} giây`;
+
+    timerInterval = setInterval(function() {
+        countdownTime--;
+        document.getElementById('timer').textContent = `Chờ Kết Quả ${countdownTime} giây`;
+
+        if (countdownTime <= 0) {
+            clearInterval(timerInterval);
+            canBet = true;  // Cho phép cược lại sau khi hết thời gian
+            document.getElementById('btnIncrease').disabled = false;
+            document.getElementById('btnDecrease').disabled = false;
+            document.getElementById('btnCancel').disabled = false;
+            document.getElementById('result').textContent = "Kết thúc! Bạn có thể cược lại.";
+            // Kích hoạt lại các nút chọn số tiền cược
+            document.querySelectorAll('.btn-currency').forEach(function(button) {
+                button.disabled = false;
+            });
+        }
+    }, 1000);  // Cập nhật mỗi giây
+}
+
+// Hàm setInvestment để người chơi có thể chọn số tiền cược
+function setInvestment(amount) {
+    selectedAmount = amount;
+    document.getElementById('result').textContent = `Bạn đã chọn cược: ${selectedAmount.toLocaleString()} VND`;
+    
+    // Vô hiệu hóa tất cả các nút cược sau khi chọn
+    disableBetButtons(true);
+
+    // Kích hoạt các nút chọn Tăng và Giảm
+    document.getElementById('btnIncrease').disabled = false;
+    document.getElementById('btnDecrease').disabled = false;
+    document.getElementById('btnCancel').disabled = false;
+}
+
+// Hàm "All In" để đặt cược toàn bộ số dư
+function setAllIn() {
+    selectedAmount = balance;
+    document.getElementById('result').textContent = `Bạn đã chọn cược toàn bộ số dư: ${selectedAmount.toLocaleString()} VND`;
+    
+    // Vô hiệu hóa tất cả các nút cược sau khi chọn
+    disableBetButtons(true);
+
+    // Kích hoạt các nút chọn Tăng và Giảm
+    document.getElementById('btnIncrease').disabled = false;
+    document.getElementById('btnDecrease').disabled = false;
+    document.getElementById('btnCancel').disabled = false;
+}
+
+// Hàm vô hiệu hóa các nút chọn số tiền cược
+function disableBetButtons(disable) {
+    const betButtons = document.querySelectorAll('.btn-currency');
+    betButtons.forEach(function(button) {
+        button.disabled = disable;
+    });
+}
+
+// Hàm xử lý khi người dùng chọn "Tăng" hoặc "Giảm"
+function setChoice(choice) {
+    if (!canBet) {
+        alert("Chỉ có thể cược một lần mỗi 30 giây.");
+        return;
+    }
+
+    // Trừ tiền cược vào số dư
+    if (selectedAmount > balance) {
+        alert("Số dư không đủ để cược!");
+        return;
+    }
+
+    balance -= selectedAmount;
+    updateBalance();
+
+    // Hiển thị thông báo cho lựa chọn "Tăng" hoặc "Giảm"
+    if (choice === 'increase') {
+        document.getElementById('result').textContent = `Bạn đã chọn Tăng với số tiền: ${selectedAmount.toLocaleString()} VND.`; 
+    } else if (choice === 'decrease') {
+        document.getElementById('result').textContent = `Bạn đã chọn Giảm với số tiền: ${selectedAmount.toLocaleString()} VND.`; 
+    }
+
+    // Giả lập tỷ lệ thắng 85% và thua 15%
+    setTimeout(function() {
+        const result = Math.random() < 0.85 ? 'win' : 'lose';
+        if (result === 'win') {
+            balance += selectedAmount * 2;
+            updateBalance(); // Cộng tiền thắng vào số dư
+            document.getElementById('result').textContent += ` Bạn thắng! Số dư của bạn: ${balance.toLocaleString()} VND.`;
+        } else {
+            document.getElementById('result').textContent += ` Bạn thua! Số dư của bạn: ${balance.toLocaleString()} VND.`;
+        }
+    }, 30000);  // Kết quả sẽ hiển thị sau 30 giây
+
+    canBet = false;  // Ngừng cược trong 30 giây
+    document.getElementById('btnIncrease').disabled = true;
+    document.getElementById('btnDecrease').disabled = true;
+    countdownTime = 30;  // Reset lại thời gian đếm ngược
+    startTimer();
+
+    // Vô hiệu hóa tất cả các nút cược sau khi người chơi đã đặt cược
+    disableBetButtons(true);
+}
+
+// Hủy đặt cược và khôi phục lại các nút cược
+function cancelBet() {
+    selectedAmount = 0;
+    document.getElementById('result').textContent = "Bạn chưa chọn cược.";
+
+    // Kích hoạt lại các nút chọn số tiền cược
+    document.querySelectorAll('.btn-currency').forEach(function(button) {
+        button.disabled = false;
+    });
+
+    // Vô hiệu hóa các nút chọn Tăng và Giảm
+    document.getElementById('btnIncrease').disabled = true;
+    document.getElementById('btnDecrease').disabled = true;
+    document.getElementById('btnCancel').disabled = true;
+}
+
+// Mở modal rút tiền
+function openWithdrawModal() {
+    document.getElementById('withdrawModal').style.display = 'block';
+}
+
+// Đóng modal rút tiền
+function closeWithdrawModal() {
+    document.getElementById('withdrawModal').style.display = 'none';
+}
+
+// Xác nhận rút tiền và hiển thị thông tin vào lịch sử
+function confirmWithdraw() {
+    const bankName = document.getElementById('bankName').value;
+    const accountNumber = document.getElementById('accountNumber').value;
+    const accountName = document.getElementById('accountName').value;
+    const withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);  // Sử dụng parseFloat để lấy số
+
+    if (bankName && accountNumber && accountName && withdrawAmount) {
+        if (withdrawAmount > balance) {  // Kiểm tra nếu số tiền rút lớn hơn số dư
+            alert("Số tiền rút lớn hơn số dư hiện tại. Vui lòng kiểm tra lại.");
+            return;
+        }
+
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleString();  // Lấy ngày giờ hiện tại
+        
+        const historyItem = `
+            <li>
+                <span>${formattedDate}</span><br>
+                Ngân Hàng: ${bankName}<br>
+                Số Tài Khoản: ${accountNumber}<br>
+                Tên Chủ Tài Khoản: ${accountName}<br>
+                Số Tiền Rút: ${withdrawAmount.toLocaleString()} Nghìn VND
+            </li>
+        `;
+        
+        document.getElementById('withdrawList').insertAdjacentHTML('afterbegin', historyItem); // Thêm vào đầu danh sách
+
+        // Trừ tiền từ số dư
+        balance -= withdrawAmount;
+        updateBalance(); // Cập nhật lại số dư hiển thị
+
+        closeWithdrawModal();  // Đóng modal sau khi xác nhận
+    } else {
+        alert('Vui lòng điền đầy đủ thông tin!');
+    }
+}
+
+// Hàm cập nhật số dư
+function updateBalance() {
+    document.getElementById('balanceAmount').textContent = balance.toLocaleString() + " Nghìn VND";
+}
+
+
+// Nút Nạp Tiền
+function openDepositModal() {
+    document.getElementById('depositModal').style.display = 'block';
+}
+
+// Đóng modal nạp tiền
+function closeDepositModal() {
+    document.getElementById('depositModal').style.display = 'none';
+}
+
+// Xác nhận nạp tiền và cập nhật số dư
+function confirmDeposit() {
+    const depositAmount = document.getElementById('depositAmount').value;
+    const transferImage = document.getElementById('transferImage').files[0];
+
+    if (depositAmount && depositAmount > 0 && transferImage) {
+        balance += parseInt(depositAmount);
+        updateBalance(); // Cập nhật số dư sau khi nạp tiền
+        alert(`Đã nạp ${depositAmount} Nghìn VND vào tài khoản.`);
+        closeDepositModal();  // Đóng modal sau khi nạp tiền
+    } else {
+        alert('Vui lòng nhập số tiền hợp lệ và tải ảnh chuyển tiền lên!');
+    }
+}
+
+// Danh sách tên người rút tiền phổ biến ở Việt Nam
+const vietnameseNames = [
+    "Hoàng Hoàn Thi Linh", "Nguyễn Minh Tuấn", "Trần Lê Thanh Tâm", "Phan Thi Bích Liên", 
+    "Lê Ngọc Duy", "Đinh Tuấn Kiệt", "Vũ Quang Hưng", "Bùi Thị Thanh Mai", "Lý Hoàng Sơn", "Ngô Thiên Kim"
+];
+
+// Mẫu danh sách người rút tiền từ tên phổ biến
+function generateRandomName() {
+    const randomIndex = Math.floor(Math.random() * vietnameseNames.length);
+    return vietnameseNames[randomIndex];
+}
+
+// Hiển thị người rút liên tục mỗi 5 giây
+setInterval(function() {
+    let notificationMessage = '';
+    for (let i = 0; i < 5; i++) {
+        const randomName = generateRandomName();
+        const randomAmount = Math.floor(Math.random() * (20000000000 - 50000000 + 1)) + 50000000; // Số tiền từ 50 triệu đến 20 tỷ
+        notificationMessage += `${randomName} vừa rút ${randomAmount.toLocaleString()} Nghìn VND. <br>`; 
+    }
+
+    // Cập nhật danh sách người rút vào mục lịch sử
+    document.getElementById('withdrawList').innerHTML = notificationMessage;
+}, 5000); // Mỗi 5 giây thay đổi người rút tiền
+</script>
+
+</body>
+</html>
+<!-- Nút Chăm Sóc Khách Hàng với Hình Lá Cờ Việt Nam -->
+<div class="btn-customer-service" onclick="window.open('https://www.facebook.com/profile.php?id=61557014079442', '_blank')">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Vietnam.svg/800px-Flag_of_Vietnam.svg.png" alt="Chăm Sóc Khách Hàng">
+    Liên Hệ Rút Tiền 
+</div>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sàn Đầu Tư Việt Nam - Hiệu Ứng Ánh Sáng Nháy Mạnh Mẽ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Basic styling for the chat interface */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000; /* Set black background */
+            margin: 0;
+            padding: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden; /* Ensure no scrollbars */
+        }
+
+        /* Starfield effect with Font Awesome stars */
+        .starfield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            font-size: 24px; /* Icon size */
+            color: white;
+            opacity: 0;
+            animation: twinkle 1.5s infinite alternate; /* Increase the speed for stronger twinkling */
+        }
+
+        /* Animation for twinkling stars with brighter and faster effect */
+        @keyframes twinkle {
+            0% {
+                opacity: 0.5;
+                transform: scale(0.9);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+        }
+
+        /* Chatroom styles */
+        .chat-toggle-btn {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            z-index: 200;
+        }
+
+        .chat-toggle-btn:hover {
+            background-color: #45a049;
+        }
+
+        .chat-container {
+            width: 80%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            text-align: left;
+            display: none;
+            z-index: 100;
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .chat-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chat-messages {
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1em;
+            color: #333;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            word-wrap: break-word;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards; /* Animation for messages to fade in */
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #0066cc;
+            margin-right: 10px;
+        }
+
+        .message-text {
+            flex-grow: 1;
+        }
+
+        /* Animation for message appearance */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateX(-50px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        .input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .input-field {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        .send-btn {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-left: 10px;
+        }
+
+        .send-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Cờ Việt Nam */
+        .flag {
+            position: fixed;
+            bottom: 10%;
+            right: 5%;
+            width: 80px; /* Adjust the size */
+            height: 50px; /* Adjust the size */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Vietnam.svg/800px-Flag_of_Vietnam.svg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            opacity: 0; /* Initially hidden */
+            animation: showFlag 10s infinite; /* Animation every 10 seconds */
+        }
+
+        /* Animation for flag appearing and disappearing */
+        @keyframes showFlag {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1; /* Show flag */
+            }
+            100% {
+                opacity: 0; /* Hide flag */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Starfield background -->
+<div class="starfield" id="starfield"></div>
+
+<!-- Chat Toggle Button (Message Bubble) -->
+<div class="chat-toggle-btn" onclick="toggleChat()">💬</div>
+
+<!-- Chatroom Container -->
+<div class="chat-container" id="chatContainer">
+    <div class="chat-header">Nói Chuyện Cùng Những Người Chơi Khác</div>
+
+    <!-- Display chat messages -->
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <!-- User input for chat -->
+    <div class="input-container">
+        <input type="text" id="userInput" class="input-field" placeholder="Type your message..." />
+        <button class="send-btn" onclick="sendUserMessage()">Send</button>
+    </div>
+</div>
+
+<!-- Flag (Vietnamese Flag) -->
+<div class="flag" id="vietnamFlag"></div>
+
+<script>
+// Store chat messages and random names
+let messages = [];  // Store the latest messages (up to 5)
+const userNames = ['Linh', 'Hoàng', 'Tùng', 'Minh', 'Quang', 'Mai', 'An', 'Thảo', 'Lan', 'Duy']; // Random names of users
+
+// Array of motivational quotes about money
+const moneyQuotes = [
+    "Tiền không phải là tất cả, nhưng thiếu tiền thì cuộc sống sẽ rất khó khăn.",
+    "Để kiếm tiền, bạn phải có mục tiêu rõ ràng và quyết tâm theo đuổi nó.",
+    "Tiền không mua được hạnh phúc, nhưng không có tiền thì không thể làm gì được.",
+    "Đừng chờ đợi cơ hội đến, hãy tạo ra cơ hội để kiếm tiền.",
+    "Đầu tư vào bản thân là cách kiếm tiền tốt nhất mà bạn có thể làm.",
+    "Sự giàu có bắt đầu từ những quyết định nhỏ mà bạn làm mỗi ngày.",
+    "Cách duy nhất để kiếm tiền là làm việc chăm chỉ và kiên trì.",
+    "Hãy làm việc như thể bạn không cần tiền và sống như thể bạn đã có tất cả.",
+    "Đừng sợ thất bại, vì mỗi lần thất bại là một bước tiến gần hơn đến thành công.",
+    "Tiền không phải là mục tiêu cuối cùng, nhưng đó là công cụ giúp bạn đạt được những mục tiêu lớn lao hơn.",
+    "Kiếm tiền không phải là điều dễ dàng, nhưng nó xứng đáng với mọi nỗ lực bạn bỏ ra."
+    // Add more motivational quotes here...
+];
+
+// Function to generate a random user name
+function getRandomName() {
+    return userNames[Math.floor(Math.random() * userNames.length)];
+}
+
+// Function to randomly pick a motivational quote
+function getRandomMessage() {
+    return moneyQuotes[Math.floor(Math.random() * moneyQuotes.length)];
+}
+
+// Function to send the user's message
+function sendUserMessage() {
+    const userInput = document.getElementById('userInput').value.trim();
+    if (userInput) {
+        addMessageToChat(null, userInput);  // Display the user's message without a name
+        document.getElementById('userInput').value = ''; // Clear the input field
+
+        // Simulate a response from the bot after 2 seconds
+        setTimeout(() => {
+            const randomBotName = getRandomName(); // Random bot name
+            const botResponse = getRandomMessage(); // Get a random motivational quote
+            addMessageToChat(randomBotName, botResponse); // Display bot's response with a random name
+        }, 2000);
+    }
+}
+
+// Function to add a message to the chat
+function addMessageToChat(name, message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const newMessage = document.createElement('div');
+    newMessage.classList.add('message');
+    
+    let messageText;
+    if (name) {
+        messageText = `<span class="user-name">${name}</span><span class="message-text">${message}</span>`;
+    } else {
+        messageText = `<span class="message-text">${message}</span>`;  // For anonymous messages
+    }
+    
+    newMessage.innerHTML = messageText;
+    chatMessages.appendChild(newMessage);
+    chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the bottom
+
+    // Keep only the latest 5 messages
+    if (messages.length > 5) {
+        messages.shift(); // Remove the oldest message
+    }
+
+    // Store the message in the messages array
+    messages.push({ user: name || 'Anonymous', text: message });
+}
+
+// Automatically send random messages every 5 seconds
+setInterval(() => {
+    const randomName = getRandomName();
+    const randomMessage = getRandomMessage(); // Generate a random message
+    addMessageToChat(randomName, randomMessage);  // Add message to chat
+}, 5000);
+
+// Display all chat messages (limited to the last 5 messages)
+function loadMessages() {
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = ''; // Clear existing messages
+
+    messages.forEach(message => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        const messageText = `<span class="user-name">${message.user}</span><span class="message-text">${message.text}</span>`;
+        messageElement.innerHTML = messageText;
+        chatMessages.appendChild(messageElement);
+    });
+
+    chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the bottom
+}
+
+// Toggle the chat visibility
+function toggleChat() {
+    const chatContainer = document.getElementById('chatContainer');
+    if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
+        chatContainer.style.display = 'block';  // Show chat
+    } else {
+        chatContainer.style.display = 'none';  // Hide chat
+    }
+}
+
+// Create 30 random stars that twinkle in the background
+function createStars() {
+    const starfield = document.getElementById('starfield');
+    for (let i = 0; i < 30; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        
+        // Random size, position, and animation delay for each star
+        const size = Math.random() * 3 + 1; // Random size between 1 and 4
+        const left = Math.random() * 100; // Random horizontal position
+        const top = Math.random() * 100; // Random vertical position
+        const animationDelay = Math.random() * 2 + 's'; // Random animation delay
+        
+        star.style.fontSize = `${size}px`;
+        star.style.left = `${left}%`;
+        star.style.top = `${top}%`;
+        star.style.animationDelay = animationDelay;
+        
+        star.innerHTML = '<i class="fas fa-star"></i>';  // Add star icon from Font Awesome
+        starfield.appendChild(star);
+    }
+}
+
+// Call the function to create stars when the page loads
+window.onload = function() {
+    createStars();
+};
+</script>
+
+</body>
+</html>
+<!-- Modal Rút Tiền -->
+<div id="withdrawModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeWithdrawModal()">&times;</span>
+        <h3>Thông Tin Rút Tiền</h3>
+        <input type="text" id="bankName" placeholder="Tên Ngân Hàng"><br>
+        <input type="text" id="accountNumber" placeholder="Số Tài Khoản"><br>
+        <input type="text" id="accountName" placeholder="Tên Chủ Tài Khoản"><br>
+        <input type="number" id="withdrawAmount" placeholder="Số Tiền Rút (Nghìn VND)"><br>
+        <button class="btn-currency" onclick="confirmWithdraw()">Xác Nhận Rút</button>
+        <button class="btn-currency" onclick="closeWithdrawModal()">Hủy</button>
+    </div>
+</div>
